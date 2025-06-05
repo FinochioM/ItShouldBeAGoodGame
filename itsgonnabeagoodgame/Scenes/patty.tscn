@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://dwtmlaybr0htv"]
+
+[ext_resource type="Texture2D" uid="uid://4ojd4co7cw2f" path="res://Textures/patty.png" id="1_8rf7p"]
+[ext_resource type="Script" path="res://Scripts/patty.gd" id="1_tqht5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3iext"]
+size = Vector2(44, 8)
+
+[node name="Patty" type="RigidBody2D"]
+can_sleep = false
+script = ExtResource("1_tqht5")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_8rf7p")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_3iext")
