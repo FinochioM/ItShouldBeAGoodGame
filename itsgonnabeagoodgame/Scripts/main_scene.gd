@@ -6,7 +6,6 @@ var money: float = 0.0
 var patty_count: int = 0
 var money_per_second_per_patty: float = 1.0
 
-# GRILL UPGRADES SYSTEM
 var grill_level: int = 1
 var base_spawn_interval: float = 10.0
 var spawn_timer: float = 0.0

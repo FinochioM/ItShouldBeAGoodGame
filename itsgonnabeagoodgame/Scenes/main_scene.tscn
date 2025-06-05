@@ -132,6 +132,7 @@ offset_bottom = 269.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_j7pmo")
 
 [node name="Title" type="Label" parent="UI/AmountUpgradeSection"]
+layout_mode = 0
 offset_left = 4.0
 offset_top = 5.0
 offset_right = 80.0
@@ -140,6 +141,7 @@ text = "AMOUNT UPGRADE"
 label_settings = SubResource("LabelSettings_5w3do")
 
 [node name="Information" type="Label" parent="UI/AmountUpgradeSection"]
+layout_mode = 0
 offset_left = 4.0
 offset_top = 16.0
 offset_right = 102.0
