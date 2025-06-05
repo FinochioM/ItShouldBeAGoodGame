@@ -4,7 +4,7 @@ var patty_scene = preload("res://Scenes/patty.tscn")
 
 var money: float = 0.0
 var patty_count: int = 0
-var money_per_second_per_patty: float = 0.1
+var money_per_second_per_patty: float = 1.0
 
 var spawn_timer: float = 0.0
 var spawn_interval: float = 10.0
@@ -12,6 +12,8 @@ var spawn_position: Vector2
 
 @onready var money_label: Label
 @onready var patty_count_label: Label
+
+var counted_patties = []
 
 func _ready():
 	spawn_position = Vector2(240, 100)
@@ -35,17 +37,22 @@ func _process(delta):
 func spawn_patty():
 	var patty = patty_scene.instantiate()
 	
-	var random_offset = randf_range(-20, 20)
+	var random_offset = randf_range(-5, 5)
 	patty.position = Vector2(spawn_position.x + random_offset, spawn_position.y)
 	
-	patty.body_entered.connect(_on_patty_landed)
+	patty.patty_landed.connect(_on_patty_landed.bind(patty))
 	
 	add_child(patty)
 	print("PATTY SPAWNED!")
 	
-func _on_patty_landed(body):
+func _on_patty_landed(patty):
+	if patty in counted_patties:
+		print("PATTY ALREADY COUNTED _ IGNORING")
+		return
+	
+	counted_patties.append(patty)
 	patty_count += 1
-	print("PATTY LANDED IN THE GRILL: TOTAL PATTIES = ", patty_count)			
+	print("PATTY LANDED IN THE GRILL: TOTAL PATTIES = ", patty_count)		
 
 func _on_money_timer_timeout():
 	var earnings = patty_count * money_per_second_per_patty

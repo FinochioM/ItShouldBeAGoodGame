@@ -23,8 +23,8 @@ func _physics_process(delta: float):
 			landing_check_timer += delta
 			if landing_check_timer >= landing_check_duration:
 				_land()
-			else:
-				landing_check_timer = 0.0					
+		else:
+			landing_check_timer = 0.0					
 
 func _land():
 	if not has_landed:
