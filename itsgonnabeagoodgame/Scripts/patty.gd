@@ -5,7 +5,7 @@ signal patty_landed
 var has_landed = false
 var landing_check_timer = 0.0
 var velocity_threshold = 10.0
-var landing_check_duration = 1.0
+var landing_check_duration = 0.1
 
 func _ready() -> void:
 	contact_monitor = true
@@ -29,6 +29,10 @@ func _physics_process(delta: float):
 func _land():
 	if not has_landed:
 		has_landed = true
+		
+		freeze = true
+		freeze_mode = RigidBody2D.FREEZE_MODE_STATIC
+		
 		patty_landed.emit()
 		print("PATTY HAS LANDED")
 		
