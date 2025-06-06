@@ -35,6 +35,8 @@ var upgrade_cost_multiplier: float = 1.5
 var counted_patties = []
 var upgrades_visible: bool = false
 var timer_bar_max_width: float
+var displayed_money: float = 0.0
+var money_lerp_speed: float = 1.0
 
 func _ready():
 	spawn_position = Vector2(240, 100)
@@ -45,7 +47,9 @@ func _ready():
 	upgrade_toggle_button.pressed.connect(toggle_upgrades)
 	click_catcher.gui_input.connect(_on_click_catcher_input)
 	click_catcher.visible = false
-
+	
+	displayed_money = money
+	
 	var money_timer = Timer.new()
 	money_timer.wait_time = 1.0
 	money_timer.timeout.connect(_on_money_timer_timeout)
@@ -57,7 +61,9 @@ func _process(delta):
 	if spawn_timer >= current_spawn_interval:
 		spawn_patty()
 		spawn_timer = 0.0
-
+	
+	displayed_money = lerp(displayed_money, money, money_lerp_speed * delta)
+	
 	update_ui()
 	update_upgrade_buttons()
 	update_timer_bar()
@@ -143,7 +149,7 @@ func update_upgrade_buttons():
 
 func update_ui():
 	if money_label:
-		money_label.text = "MONEY: %.0f" % money
+		money_label.text = format_money(displayed_money)
 	if patty_count_label:
 		patty_count_label.text = "PATTIES: %d" % patty_count
 	if grill_level_label:
@@ -198,3 +204,11 @@ func get_stack_top_y() -> float:
 			if patty.global_position.y < top_y:
 				top_y = patty.global_position.y
 	return top_y - 50
+
+func format_money(amount: float) -> String:
+	if amount >= 1000000:
+		return "MONEY: %.1fM" % (amount / 1000000.0)
+	elif amount >= 1000:
+		return "MONEY: %.1fK" % (amount / 1000.0)
+	else:
+		return "MONEY: %.0f" % amount
