@@ -20,16 +20,27 @@ var upgrade_cost_multiplier: float = 1.5
 @onready var money_label: Label = $UI/MoneyLabel
 @onready var patty_count_label: Label = $UI/PattyCountLabel
 @onready var grill_level_label: Label = $UI/GrillLevelLabel
-@onready var timing_upgrade_button: TextureButton = $UI/TimingUpgradeSection/UpgradeButton
-@onready var amount_upgrade_button: TextureButton = $UI/AmountUpgradeSection/UpgradeButton
-@onready var timing_info_label: Label = $UI/TimingUpgradeSection/Information
-@onready var amount_info_label: Label = $UI/AmountUpgradeSection/Information
+
+@onready var timing_upgrade_button: TextureButton = $UI/UpgradesContainer/TimingUpgradeSection/UpgradeButton
+@onready var amount_upgrade_button: TextureButton = $UI/UpgradesContainer/AmountUpgradeSection/UpgradeButton
+@onready var timing_info_label: Label = $UI/UpgradesContainer/TimingUpgradeSection/Information
+@onready var amount_info_label: Label = $UI/UpgradesContainer/AmountUpgradeSection/Information
+
+@onready var upgrade_toggle_button: TextureButton = $UI/UpgradesToggle
+@onready var animation_player: AnimationPlayer = $UI/ToggleUpgradesPlayer
+@onready var upgrade_container: Control = $UI/UpgradesContainer
+@onready var click_catcher: Control = $UI/ClickCatcher
 
 var counted_patties = []
+var upgrades_visible: bool = false
 
 func _ready():
 	spawn_position = Vector2(240, 100)
 	update_spawn_interval()
+	
+	upgrade_toggle_button.pressed.connect(toggle_upgrades)
+	click_catcher.gui_input.connect(_on_click_catcher_input)
+	click_catcher.visible = false
 
 	var money_timer = Timer.new()
 	money_timer.wait_time = 1.0
@@ -149,3 +160,17 @@ func update_ui():
 		else:
 			var levels_until_next = 5 - (grill_level % 5)
 			amount_info_label.text = "Available in\n%d levels\n(Level %d)" % [levels_until_next, grill_level + levels_until_next]
+
+func toggle_upgrades():
+	if upgrades_visible:
+		animation_player.play("hide_upgrades_panel")
+		click_catcher.visible = false
+		upgrades_visible = false
+	else:
+		animation_player.play("show_upgrades_panel")
+		click_catcher.visible = true
+		upgrades_visible = true
+
+func _on_click_catcher_input(event):
+	if event is InputEventMouseButton and event.pressed:
+		toggle_upgrades()

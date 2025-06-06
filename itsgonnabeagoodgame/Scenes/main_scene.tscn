@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://dt7nb2olijhqg"]
+[gd_scene load_steps=24 format=3 uid="uid://dt7nb2olijhqg"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_m4eul"]
 [ext_resource type="Texture2D" uid="uid://fkr1wa87tpik" path="res://Textures/temp_bg.png" id="1_on3r6"]
@@ -9,6 +9,8 @@
 [ext_resource type="FontFile" uid="uid://dekjyqe4b7kfu" path="res://Fonts/Everyday_Slight.ttf" id="6_61tr5"]
 [ext_resource type="Texture2D" uid="uid://dw0gge25on1wh" path="res://Textures/upgrade_grill_button_pressed.png" id="8_32mtn"]
 [ext_resource type="Texture2D" uid="uid://bni5gn2u4yndl" path="res://Textures/upgrade_grill_button_disabled.png" id="8_57rwp"]
+[ext_resource type="Texture2D" uid="uid://0jcs4x3daf0" path="res://Textures/grill_upgrades_toggle.png" id="10_hh2tp"]
+[ext_resource type="Texture2D" uid="uid://dwcnuyom0b2cn" path="res://Textures/grill_upgrades_toggle_pressed.png" id="11_00rb3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r0scy"]
 size = Vector2(24, 10)
@@ -46,6 +48,94 @@ font_size = 5
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_j7pmo"]
 texture = ExtResource("4_h8it7")
 
+[sub_resource type="Animation" id="Animation_glq7u"]
+resource_name = "show_upgrades_panel"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("UpgradesContainer:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.166667, 0.333333),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(485, 46), Vector2(357, 46), Vector2(372, 46)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("UpgradesToggle:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.0666667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_iv7uo"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("UpgradesContainer:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(485, 46)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("UpgradesToggle:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_l0wkb"]
+resource_name = "hide_upgrades_panel"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("UpgradesContainer:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(372, 46), Vector2(484, 46)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("UpgradesToggle:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_8ssvi"]
+_data = {
+"RESET": SubResource("Animation_iv7uo"),
+"hide_upgrades_panel": SubResource("Animation_l0wkb"),
+"show_upgrades_panel": SubResource("Animation_glq7u")
+}
+
 [node name="MainScene" type="Node2D"]
 script = ExtResource("1_m4eul")
 metadata/_edit_horizontal_guides_ = [150.0]
@@ -67,12 +157,20 @@ shape = SubResource("RectangleShape2D_r0scy")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
+[node name="ClickCatcher" type="Control" parent="UI"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 479.0
+offset_bottom = 270.0
+
 [node name="MoneyLabel" type="Label" parent="UI"]
 offset_right = 40.0
 offset_bottom = 23.0
 theme_override_font_sizes/font_size = 0
 text = "TEST"
 label_settings = SubResource("LabelSettings_1xgt8")
+metadata/_edit_lock_ = true
 
 [node name="PattyCountLabel" type="Label" parent="UI"]
 offset_top = 25.0
@@ -80,6 +178,7 @@ offset_right = 40.0
 offset_bottom = 48.0
 text = "TEST"
 label_settings = SubResource("LabelSettings_5ctbs")
+metadata/_edit_lock_ = true
 
 [node name="GrillLevelLabel" type="Label" parent="UI"]
 offset_left = 373.0
@@ -88,15 +187,22 @@ offset_right = 479.0
 offset_bottom = 36.0
 text = "10"
 label_settings = SubResource("LabelSettings_sch8i")
+metadata/_edit_lock_ = true
 
-[node name="TimingUpgradeSection" type="Panel" parent="UI"]
-offset_left = 373.0
+[node name="UpgradesContainer" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 485.0
 offset_top = 46.0
-offset_right = 479.0
-offset_bottom = 157.0
+offset_right = 591.0
+offset_bottom = 269.0
+
+[node name="TimingUpgradeSection" type="Panel" parent="UI/UpgradesContainer"]
+offset_right = 106.0
+offset_bottom = 111.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_b4xt3")
 
-[node name="Title" type="Label" parent="UI/TimingUpgradeSection"]
+[node name="Title" type="Label" parent="UI/UpgradesContainer/TimingUpgradeSection"]
 layout_mode = 0
 offset_left = 4.0
 offset_top = 5.0
@@ -105,7 +211,7 @@ offset_bottom = 14.0
 text = "SPEED UPGRADE"
 label_settings = SubResource("LabelSettings_5w3do")
 
-[node name="Information" type="Label" parent="UI/TimingUpgradeSection"]
+[node name="Information" type="Label" parent="UI/UpgradesContainer/TimingUpgradeSection"]
 layout_mode = 0
 offset_left = 4.0
 offset_top = 16.0
@@ -113,7 +219,7 @@ offset_right = 102.0
 offset_bottom = 80.0
 label_settings = SubResource("LabelSettings_rsnic")
 
-[node name="UpgradeButton" type="TextureButton" parent="UI/TimingUpgradeSection"]
+[node name="UpgradeButton" type="TextureButton" parent="UI/UpgradesContainer/TimingUpgradeSection"]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 82.0
@@ -124,14 +230,13 @@ texture_pressed = ExtResource("8_32mtn")
 texture_disabled = ExtResource("8_57rwp")
 ignore_texture_size = true
 
-[node name="AmountUpgradeSection" type="Panel" parent="UI"]
-offset_left = 373.0
-offset_top = 158.0
-offset_right = 479.0
-offset_bottom = 269.0
+[node name="AmountUpgradeSection" type="Panel" parent="UI/UpgradesContainer"]
+offset_top = 112.0
+offset_right = 106.0
+offset_bottom = 223.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_j7pmo")
 
-[node name="Title" type="Label" parent="UI/AmountUpgradeSection"]
+[node name="Title" type="Label" parent="UI/UpgradesContainer/AmountUpgradeSection"]
 layout_mode = 0
 offset_left = 4.0
 offset_top = 5.0
@@ -140,7 +245,7 @@ offset_bottom = 14.0
 text = "AMOUNT UPGRADE"
 label_settings = SubResource("LabelSettings_5w3do")
 
-[node name="Information" type="Label" parent="UI/AmountUpgradeSection"]
+[node name="Information" type="Label" parent="UI/UpgradesContainer/AmountUpgradeSection"]
 layout_mode = 0
 offset_left = 4.0
 offset_top = 16.0
@@ -148,7 +253,7 @@ offset_right = 102.0
 offset_bottom = 80.0
 label_settings = SubResource("LabelSettings_rsnic")
 
-[node name="UpgradeButton" type="TextureButton" parent="UI/AmountUpgradeSection"]
+[node name="UpgradeButton" type="TextureButton" parent="UI/UpgradesContainer/AmountUpgradeSection"]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 82.0
@@ -158,5 +263,18 @@ texture_normal = ExtResource("5_hn77c")
 texture_pressed = ExtResource("8_32mtn")
 texture_disabled = ExtResource("8_57rwp")
 
-[connection signal="pressed" from="UI/TimingUpgradeSection/UpgradeButton" to="." method="purchase_timing_upgrade"]
-[connection signal="pressed" from="UI/AmountUpgradeSection/UpgradeButton" to="." method="purchase_amount_upgrade"]
+[node name="UpgradesToggle" type="TextureButton" parent="UI"]
+offset_left = 381.0
+offset_top = 243.0
+offset_right = 477.0
+offset_bottom = 267.0
+texture_normal = ExtResource("10_hh2tp")
+texture_pressed = ExtResource("11_00rb3")
+
+[node name="ToggleUpgradesPlayer" type="AnimationPlayer" parent="UI"]
+libraries = {
+"": SubResource("AnimationLibrary_8ssvi")
+}
+
+[connection signal="pressed" from="UI/UpgradesContainer/TimingUpgradeSection/UpgradeButton" to="." method="purchase_timing_upgrade"]
+[connection signal="pressed" from="UI/UpgradesContainer/AmountUpgradeSection/UpgradeButton" to="." method="purchase_amount_upgrade"]
