@@ -35,8 +35,10 @@ var upgrade_cost_multiplier: float = 1.5
 var counted_patties = []
 var upgrades_visible: bool = false
 var timer_bar_max_width: float
+
 var displayed_money: float = 0.0
 var money_lerp_speed: float = 1.0
+var money_timer_elapsed: float = 0.0
 
 func _ready():
 	spawn_position = Vector2(240, 100)
@@ -50,11 +52,6 @@ func _ready():
 	
 	displayed_money = money
 	
-	var money_timer = Timer.new()
-	money_timer.wait_time = 1.0
-	money_timer.timeout.connect(_on_money_timer_timeout)
-	money_timer.autostart = true
-	add_child(money_timer)
 
 func _process(delta):
 	spawn_timer += delta
@@ -62,7 +59,15 @@ func _process(delta):
 		spawn_patty()
 		spawn_timer = 0.0
 	
-	displayed_money = lerp(displayed_money, money, money_lerp_speed * delta)
+	money_timer_elapsed += delta
+	if money_timer_elapsed >= 1.0:
+		_on_money_timer_timeout()
+		money_timer_elapsed = 0.0
+	
+	var current_earnings_per_second = patty_count * money_per_second_per_patty
+	var predicted_money = money + (current_earnings_per_second * money_timer_elapsed)
+	
+	displayed_money = lerp(displayed_money, predicted_money, money_lerp_speed * delta)
 	
 	update_ui()
 	update_upgrade_buttons()
@@ -92,6 +97,7 @@ func _on_patty_landed(patty):
 func _on_money_timer_timeout():
 	var earnings = patty_count * money_per_second_per_patty
 	money += earnings
+	
 	if earnings > 0:
 		print("EARNED ", earnings, " TOTAL MONEY", money)
 
