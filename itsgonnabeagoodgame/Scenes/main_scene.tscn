@@ -19,12 +19,12 @@ size = Vector2(24, 10)
 [sub_resource type="LabelSettings" id="LabelSettings_1xgt8"]
 line_spacing = 1.0
 font = ExtResource("6_61tr5")
-font_size = 15
+font_size = 10
 
 [sub_resource type="LabelSettings" id="LabelSettings_5ctbs"]
 line_spacing = 1.0
 font = ExtResource("6_61tr5")
-font_size = 15
+font_size = 10
 
 [sub_resource type="LabelSettings" id="LabelSettings_sch8i"]
 line_spacing = 1.0
@@ -167,19 +167,17 @@ offset_bottom = 270.0
 
 [node name="MoneyLabel" type="Label" parent="UI"]
 offset_right = 40.0
-offset_bottom = 23.0
+offset_bottom = 16.0
 theme_override_font_sizes/font_size = 0
 text = "TEST"
 label_settings = SubResource("LabelSettings_1xgt8")
-metadata/_edit_lock_ = true
 
 [node name="PattyCountLabel" type="Label" parent="UI"]
-offset_top = 25.0
+offset_top = 16.0
 offset_right = 40.0
-offset_bottom = 48.0
+offset_bottom = 32.0
 text = "TEST"
 label_settings = SubResource("LabelSettings_5ctbs")
-metadata/_edit_lock_ = true
 
 [node name="GrillLevelLabel" type="Label" parent="UI"]
 offset_left = 373.0
@@ -190,6 +188,15 @@ text = "10"
 label_settings = SubResource("LabelSettings_sch8i")
 metadata/_edit_lock_ = true
 
+[node name="UpgradesToggle" type="TextureButton" parent="UI"]
+offset_left = 381.0
+offset_top = 243.0
+offset_right = 477.0
+offset_bottom = 267.0
+texture_normal = ExtResource("10_hh2tp")
+texture_pressed = ExtResource("11_00rb3")
+metadata/_edit_lock_ = true
+
 [node name="UpgradesContainer" type="Control" parent="UI"]
 layout_mode = 3
 anchors_preset = 0
@@ -197,6 +204,7 @@ offset_left = 485.0
 offset_top = 46.0
 offset_right = 591.0
 offset_bottom = 269.0
+metadata/_edit_lock_ = true
 
 [node name="TimingUpgradeSection" type="Panel" parent="UI/UpgradesContainer"]
 offset_right = 106.0
@@ -264,24 +272,12 @@ texture_normal = ExtResource("5_hn77c")
 texture_pressed = ExtResource("8_32mtn")
 texture_disabled = ExtResource("8_57rwp")
 
-[node name="UpgradesToggle" type="TextureButton" parent="UI"]
-offset_left = 381.0
-offset_top = 243.0
-offset_right = 477.0
-offset_bottom = 267.0
-texture_normal = ExtResource("10_hh2tp")
-texture_pressed = ExtResource("11_00rb3")
-
-[node name="ToggleUpgradesPlayer" type="AnimationPlayer" parent="UI"]
-libraries = {
-"": SubResource("AnimationLibrary_8ssvi")
-}
-
 [node name="TimerBarBorder" type="TextureRect" parent="UI"]
 offset_left = 185.0
 offset_right = 294.0
 offset_bottom = 10.0
 texture = ExtResource("12_su356")
+metadata/_edit_lock_ = true
 
 [node name="TimerBarFill" type="ColorRect" parent="UI/TimerBarBorder"]
 layout_mode = 0
@@ -289,7 +285,12 @@ offset_left = 2.0
 offset_top = 2.0
 offset_right = 107.0
 offset_bottom = 8.0
-color = Color(0.321569, 0.521569, 0.337255, 1)
+color = Color(0.24, 0.5, 0.261667, 1)
+
+[node name="ToggleUpgradesPlayer" type="AnimationPlayer" parent="UI"]
+libraries = {
+"": SubResource("AnimationLibrary_8ssvi")
+}
 
 [connection signal="pressed" from="UI/UpgradesContainer/TimingUpgradeSection/UpgradeButton" to="." method="purchase_timing_upgrade"]
 [connection signal="pressed" from="UI/UpgradesContainer/AmountUpgradeSection/UpgradeButton" to="." method="purchase_amount_upgrade"]

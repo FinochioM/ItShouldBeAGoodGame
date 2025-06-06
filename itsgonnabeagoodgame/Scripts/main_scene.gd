@@ -66,7 +66,8 @@ func spawn_patty():
 	var patty = patty_scene.instantiate()
 
 	var random_offset = randf_range(-5, 5)
-	patty.position = Vector2(spawn_position.x + random_offset, spawn_position.y)
+	var spawn_y = get_stack_top_y()
+	patty.position = Vector2(spawn_position.x + random_offset, spawn_y)
 
 	patty.patty_landed.connect(_on_patty_landed.bind(patty))
 
@@ -142,11 +143,11 @@ func update_upgrade_buttons():
 
 func update_ui():
 	if money_label:
-		money_label.text = "MONEY: $%.0f" % money
+		money_label.text = "MONEY: %.0f" % money
 	if patty_count_label:
 		patty_count_label.text = "PATTIES: %d" % patty_count
 	if grill_level_label:
-		grill_level_label.text = "GRILL LEVEL: %d" % grill_level
+		grill_level_label.text = "GRILL: %d" % grill_level
 
 	if timing_info_label:
 		if can_timing_upgrade():
@@ -186,3 +187,14 @@ func update_timer_bar():
 		progress = clamp(progress, 0.0, 1.0)
 		
 		timer_bar_fill.size.x = timer_bar_max_width * progress
+
+func get_stack_top_y() -> float:
+	if counted_patties.is_empty():
+		return spawn_position.y
+		
+	var top_y = spawn_position.y
+	for patty in counted_patties:
+		if is_instance_valid(patty):
+			if patty.global_position.y < top_y:
+				top_y = patty.global_position.y
+	return top_y - 50
