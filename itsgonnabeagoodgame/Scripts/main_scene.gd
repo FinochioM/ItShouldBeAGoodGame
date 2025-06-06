@@ -30,13 +30,17 @@ var upgrade_cost_multiplier: float = 1.5
 @onready var animation_player: AnimationPlayer = $UI/ToggleUpgradesPlayer
 @onready var upgrade_container: Control = $UI/UpgradesContainer
 @onready var click_catcher: Control = $UI/ClickCatcher
+@onready var timer_bar_fill: ColorRect = $UI/TimerBarBorder/TimerBarFill
 
 var counted_patties = []
 var upgrades_visible: bool = false
+var timer_bar_max_width: float
 
 func _ready():
 	spawn_position = Vector2(240, 100)
 	update_spawn_interval()
+	
+	timer_bar_max_width = timer_bar_fill.size.x
 	
 	upgrade_toggle_button.pressed.connect(toggle_upgrades)
 	click_catcher.gui_input.connect(_on_click_catcher_input)
@@ -56,6 +60,7 @@ func _process(delta):
 
 	update_ui()
 	update_upgrade_buttons()
+	update_timer_bar()
 
 func spawn_patty():
 	var patty = patty_scene.instantiate()
@@ -174,3 +179,10 @@ func toggle_upgrades():
 func _on_click_catcher_input(event):
 	if event is InputEventMouseButton and event.pressed:
 		toggle_upgrades()
+
+func update_timer_bar():
+	if current_spawn_interval > 0:
+		var progress = spawn_timer / current_spawn_interval
+		progress = clamp(progress, 0.0, 1.0)
+		
+		timer_bar_fill.size.x = timer_bar_max_width * progress

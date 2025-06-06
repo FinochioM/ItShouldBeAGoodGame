@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://dt7nb2olijhqg"]
+[gd_scene load_steps=25 format=3 uid="uid://dt7nb2olijhqg"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_m4eul"]
 [ext_resource type="Texture2D" uid="uid://fkr1wa87tpik" path="res://Textures/temp_bg.png" id="1_on3r6"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://bni5gn2u4yndl" path="res://Textures/upgrade_grill_button_disabled.png" id="8_57rwp"]
 [ext_resource type="Texture2D" uid="uid://0jcs4x3daf0" path="res://Textures/grill_upgrades_toggle.png" id="10_hh2tp"]
 [ext_resource type="Texture2D" uid="uid://dwcnuyom0b2cn" path="res://Textures/grill_upgrades_toggle_pressed.png" id="11_00rb3"]
+[ext_resource type="Texture2D" uid="uid://ylk4y3bunl6l" path="res://Textures/grill_timer_bar.png" id="12_su356"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r0scy"]
 size = Vector2(24, 10)
@@ -275,6 +276,20 @@ texture_pressed = ExtResource("11_00rb3")
 libraries = {
 "": SubResource("AnimationLibrary_8ssvi")
 }
+
+[node name="TimerBarBorder" type="TextureRect" parent="UI"]
+offset_left = 185.0
+offset_right = 294.0
+offset_bottom = 10.0
+texture = ExtResource("12_su356")
+
+[node name="TimerBarFill" type="ColorRect" parent="UI/TimerBarBorder"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 107.0
+offset_bottom = 8.0
+color = Color(0.321569, 0.521569, 0.337255, 1)
 
 [connection signal="pressed" from="UI/UpgradesContainer/TimingUpgradeSection/UpgradeButton" to="." method="purchase_timing_upgrade"]
 [connection signal="pressed" from="UI/UpgradesContainer/AmountUpgradeSection/UpgradeButton" to="." method="purchase_amount_upgrade"]
