@@ -7,7 +7,6 @@
 size = Vector2(22, 4)
 
 [node name="Patty" type="RigidBody2D"]
-continuous_cd = 1
 script = ExtResource("1_tqht5")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
