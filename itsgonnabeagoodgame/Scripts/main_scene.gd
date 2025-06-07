@@ -37,7 +37,7 @@ var upgrades_visible: bool = false
 var timer_bar_max_width: float
 
 var displayed_money: float = 0.0
-var money_lerp_speed: float = 1.0
+var money_lerp_speed: float = 5.0
 var money_timer_elapsed: float = 0.0
 
 func _ready():
