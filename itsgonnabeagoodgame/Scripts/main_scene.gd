@@ -136,14 +136,16 @@ func update_patty_multiplier():
 
 func purchase_timing_upgrade():
 	if can_timing_upgrade() and money >= get_timing_upgrade_cost():
-		money -= get_timing_upgrade_cost()
+		var cost = get_timing_upgrade_cost()
+		spend_money(cost)
 		grill_level += 1
 		update_spawn_interval()
 		print("TIMING UPGRADE PURCHASED, THE NEW LEVEL IS: ", grill_level, " AND THE SPAWN INTERVAL IS ", current_spawn_interval)
 
 func purchase_amount_upgrade():
 	if can_amount_upgrade() and money >= get_amount_upgrade_cost():
-		money -= get_amount_upgrade_cost()
+		var cost = get_amount_upgrade_cost()
+		spend_money(cost)
 		grill_level += 1
 		update_patty_multiplier()
 		print("AMOUNT UPGRADE PURCHASED, THE NEW LEVEL IS: ", grill_level, " AND THE NEW MULTIPLIER IS ", patty_multiplier)
@@ -218,3 +220,7 @@ func format_money(amount: float) -> String:
 		return "MONEY: %.1fK" % (amount / 1000.0)
 	else:
 		return "MONEY: %.0f" % amount
+
+func spend_money(amount: float):
+	money -= amount
+	displayed_money = money
