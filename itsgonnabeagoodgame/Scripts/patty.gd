@@ -15,6 +15,10 @@ func _ready() -> void:
 
 	collision_layer = 1
 	collision_mask = 1
+	
+	print("Patty sprite node exists: ", sprite != null)
+	if sprite:
+		print("Current sprite texture: ", sprite.texture)
 
 
 func _physics_process(delta: float):
@@ -44,4 +48,4 @@ func set_patty_sprite(texture: Texture2D):
 	if texture and sprite:
 		sprite.texture = texture
 	else:
-		print("FAILED TO LOAD PATTY TEXTURE")
+		print("FAILED TO SET PATTY TEXTURE")
