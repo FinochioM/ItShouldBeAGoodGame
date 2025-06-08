@@ -6,16 +6,12 @@ var money: float = 0.0
 var patty_count: int = 0
 var money_per_second_per_patty: float = 1.0
 
-var grill_level: int = 1
-var base_spawn_interval: float = 10.0
+var grill_manager: GrillManager
+var shop_manager: ShopManager
+
 var spawn_timer: float = 0.0
 var spawn_position: Vector2
-var current_spawn_interval: float = 10.0
-var patty_multiplier: int = 1
-
-var timing_upgrade_base_cost: float = 10.0
-var amount_upgrade_base_cost: float = 50.0
-var upgrade_cost_multiplier: float = 1.5
+var counted_patties = []
 
 @onready var money_label: Label = $UI/MoneyLabel
 @onready var patty_count_label: Label = $UI/PattyCountLabel
@@ -26,13 +22,15 @@ var upgrade_cost_multiplier: float = 1.5
 @onready var timing_info_label: Label = $UI/UpgradesContainer/TimingUpgradeSection/Information
 @onready var amount_info_label: Label = $UI/UpgradesContainer/AmountUpgradeSection/Information
 
+@onready var sauce_upgrade_button: TextureButton = $UI/ShopContainer/SauceSection/UpgradeButton
+@onready var sauce_info_label: Label = $UI/ShopContainer/SauceSection/Information
+
 @onready var upgrade_toggle_button: TextureButton = $UI/UpgradesToggle
 @onready var animation_player: AnimationPlayer = $UI/ToggleUpgradesPlayer
 @onready var upgrade_container: Control = $UI/UpgradesContainer
 @onready var click_catcher: Control = $UI/ClickCatcher
 @onready var timer_bar_fill: ColorRect = $UI/TimerBarBorder/TimerBarFill
 
-var counted_patties = []
 var upgrades_visible: bool = false
 var timer_bar_max_width: float
 
@@ -41,21 +39,27 @@ var money_lerp_speed: float = 5.0
 var money_timer_elapsed: float = 0.0
 
 func _ready():
-	spawn_position = Vector2(240, 100)
-	update_spawn_interval()
+	grill_manager = GrillManager.new()
+	shop_manager = ShopManager.new()
+	add_child(grill_manager)
+	add_child(shop_manager)
 	
+	grill_manager.grill_upgraded.connect(_on_grill_upgraded)
+	shop_manager.sauce_upgraded.connect(_on_sauce_upgraded)
+	
+	spawn_position = Vector2(240, 100)
 	timer_bar_max_width = timer_bar_fill.size.x
+	displayed_money = money
 	
 	upgrade_toggle_button.pressed.connect(toggle_upgrades)
 	click_catcher.gui_input.connect(_on_click_catcher_input)
 	click_catcher.visible = false
 	
-	displayed_money = money
-	
+	sauce_upgrade_button.pressed.connect(purchase_sauce_upgrade)
 
 func _process(delta):
 	spawn_timer += delta
-	if spawn_timer >= current_spawn_interval:
+	if spawn_timer >= grill_manager.current_spawn_interval:
 		spawn_patty()
 		spawn_timer = 0.0
 	
@@ -64,9 +68,8 @@ func _process(delta):
 		_on_money_timer_timeout()
 		money_timer_elapsed = 0.0
 	
-	var current_earnings_per_second = patty_count * money_per_second_per_patty
+	var current_earnings_per_second = get_total_earnings_per_second()
 	var predicted_money = money + (current_earnings_per_second * money_timer_elapsed)
-	
 	displayed_money = lerp(displayed_money, predicted_money, money_lerp_speed * delta)
 	
 	update_ui()
@@ -79,81 +82,57 @@ func spawn_patty():
 	var random_offset = randf_range(-5, 5)
 	var spawn_y = get_stack_top_y()
 	patty.position = Vector2(spawn_position.x + random_offset, spawn_y)
+	
+	patty.set_patty_sprite(shop_manager.get_current_patty_sprite_path())
 
 	patty.patty_landed.connect(_on_patty_landed.bind(patty))
 
-	add_child(patty)
+	add_child(patty)	
 	print("PATTY SPAWNED!")
 
 func _on_patty_landed(patty):
 	if patty in counted_patties:
-		print("PATTY ALREADY COUNTED _ IGNORING")
+		print("PATTY ALREADY COUNTED - IGNORING")
 		return
 
 	counted_patties.append(patty)
-	patty_count += patty_multiplier
+	patty_count += grill_manager.patty_multiplier
 	print("PATTY LANDED IN THE GRILL: TOTAL PATTIES = ", patty_count)
 
 func _on_money_timer_timeout():
-	var earnings = patty_count * money_per_second_per_patty
+	var earnings = get_total_earnings_per_second()
 	money += earnings
 	
 	if earnings > 0:
-		print("EARNED ", earnings, " TOTAL MONEY", money)
+		print("EARNED ", earnings, " TOTAL MONEY ", money)
 
-func can_timing_upgrade() -> bool:
-	return grill_level % 5 != 0
-
-func can_amount_upgrade() -> bool:
-	return grill_level % 5 == 0
-
-func get_timing_upgrade_cost() -> float:
-	var timing_upgrades = get_timing_upgrades_count()
-	return timing_upgrade_base_cost * pow(upgrade_cost_multiplier, timing_upgrades)
-
-func get_amount_upgrade_cost() -> float:
-	var amount_upgrades = get_amount_upgrades_count()
-	return amount_upgrade_base_cost * pow(upgrade_cost_multiplier, amount_upgrades)
-
-func get_timing_upgrades_count() -> int:
-	var count = 0
-	for level in range(1, grill_level + 1):
-		if level % 5 != 0:
-			count += 1
-	return count
-
-func get_amount_upgrades_count() -> int:
-	@warning_ignore("integer_division")
-	return grill_level / 5
-
-func update_spawn_interval():
-	var timing_upgrades = get_timing_upgrades_count()
-	current_spawn_interval = max(base_spawn_interval - (timing_upgrades * 0.1), 0.5)
-
-func update_patty_multiplier():
-	var amount_upgrades = get_amount_upgrades_count()
-	patty_multiplier = amount_upgrades + 1
+func get_total_earnings_per_second() -> float:
+	var base_earnings = patty_count * money_per_second_per_patty
+	var sauce_multiplier = shop_manager.get_current_money_multiplier()
+	return base_earnings * sauce_multiplier
 
 func purchase_timing_upgrade():
-	if can_timing_upgrade() and money >= get_timing_upgrade_cost():
-		var cost = get_timing_upgrade_cost()
-		spend_money(cost)
-		grill_level += 1
-		update_spawn_interval()
-		print("TIMING UPGRADE PURCHASED, THE NEW LEVEL IS: ", grill_level, " AND THE SPAWN INTERVAL IS ", current_spawn_interval)
+	money = grill_manager.purchase_timing_upgrade(money)
 
 func purchase_amount_upgrade():
-	if can_amount_upgrade() and money >= get_amount_upgrade_cost():
-		var cost = get_amount_upgrade_cost()
-		spend_money(cost)
-		grill_level += 1
-		update_patty_multiplier()
-		print("AMOUNT UPGRADE PURCHASED, THE NEW LEVEL IS: ", grill_level, " AND THE NEW MULTIPLIER IS ", patty_multiplier)
+	money = grill_manager.purchase_amount_upgrade(money)
+
+func purchase_sauce_upgrade():
+	money = shop_manager.purchase_sauce_upgrade(money)
+
+func _on_grill_upgraded(new_level: int):
+	print("Grill upgraded to level: ", new_level)
+
+func _on_sauce_upgraded(new_level: int):
+	print("Sauce upgraded to level: ", new_level, " (", shop_manager.get_current_sauce_name(), ")")
+	print("Money multiplier is now: ", shop_manager.get_current_money_multiplier())
 
 func update_upgrade_buttons():
-	timing_upgrade_button.disabled = not can_timing_upgrade() or money < get_timing_upgrade_cost()
-
-	amount_upgrade_button.disabled = not can_amount_upgrade() or money < get_amount_upgrade_cost()
+	timing_upgrade_button.disabled = not grill_manager.can_timing_upgrade() or money < grill_manager.get_timing_upgrade_cost()
+	amount_upgrade_button.disabled = not grill_manager.can_amount_upgrade() or money < grill_manager.get_amount_upgrade_cost()
+	
+	if sauce_upgrade_button:
+		sauce_upgrade_button.disabled = not shop_manager.can_upgrade_sauce(money)
 
 func update_ui():
 	if money_label:
@@ -161,25 +140,57 @@ func update_ui():
 	if patty_count_label:
 		patty_count_label.text = "PATTIES: %d" % patty_count
 	if grill_level_label:
-		grill_level_label.text = "GRILL: %d" % grill_level
+		grill_level_label.text = "GRILL: %d" % grill_manager.grill_level
 
+	update_grill_upgrade_info()
+	update_shop_info()
+
+func update_grill_upgrade_info():
 	if timing_info_label:
-		if can_timing_upgrade():
-			var cost = get_timing_upgrade_cost()
-			var next_interval = max(current_spawn_interval - 0.1, 0.5)
-			timing_info_label.text = "Next Level: %d\nCost: $%.0f\nTime: %.1fs -> %.1fs" % [grill_level + 1, cost, current_spawn_interval, next_interval]
+		var timing_info = grill_manager.get_timing_upgrade_info()
+		if timing_info["available"]:
+			timing_info_label.text = "Next Level: %d\nCost: $%.0f\nTime: %.1fs -> %.1fs" % [
+				timing_info["next_level"], 
+				timing_info["cost"], 
+				timing_info["current_interval"], 
+				timing_info["next_interval"]
+			]
 		else:
-			var levels_until_next = 5 - (grill_level % 5)
-			timing_info_label.text = "Available in\n%d levels\n(Level %d)" % [levels_until_next, grill_level + levels_until_next]
+			timing_info_label.text = "Available in\n%d levels\n(Level %d)" % [
+				timing_info["levels_until_next"], 
+				timing_info["unlock_level"]
+			]
 
 	if amount_info_label:
-		if can_amount_upgrade():
-			var cost = get_amount_upgrade_cost()
-			var next_multiplier = patty_multiplier + 1
-			amount_info_label.text = "Next Level: %d\nCost: $%.0f\nMultiplier: x%d -> x%d" % [grill_level + 1, cost, patty_multiplier, next_multiplier]
+		var amount_info = grill_manager.get_amount_upgrade_info()
+		if amount_info["available"]:
+			amount_info_label.text = "Next Level: %d\nCost: $%.0f\nMultiplier: x%d -> x%d" % [
+				amount_info["next_level"], 
+				amount_info["cost"], 
+				amount_info["current_multiplier"], 
+				amount_info["next_multiplier"]
+			]
 		else:
-			var levels_until_next = 5 - (grill_level % 5)
-			amount_info_label.text = "Available in\n%d levels\n(Level %d)" % [levels_until_next, grill_level + levels_until_next]
+			amount_info_label.text = "Available in\n%d levels\n(Level %d)" % [
+				amount_info["levels_until_next"], 
+				amount_info["unlock_level"]
+			]
+
+func update_shop_info():
+	if sauce_info_label:
+		var sauce_info = shop_manager.get_next_sauce_info()
+		if sauce_info.get("max_level", false):
+			sauce_info_label.text = "MAX LEVEL\n%s\nMultiplier: %.1fx" % [
+				shop_manager.get_current_sauce_name(),
+				shop_manager.get_current_money_multiplier()
+			]
+		else:
+			sauce_info_label.text = "Next: %s\nCost: $%.0f\nMultiplier: %.1fx -> %.1fx" % [
+				sauce_info["name"],
+				sauce_info["cost"],
+				shop_manager.get_current_money_multiplier(),
+				sauce_info["multiplier"]
+			]
 
 func toggle_upgrades():
 	if upgrades_visible:
@@ -196,10 +207,9 @@ func _on_click_catcher_input(event):
 		toggle_upgrades()
 
 func update_timer_bar():
-	if current_spawn_interval > 0:
-		var progress = spawn_timer / current_spawn_interval
+	if grill_manager.current_spawn_interval > 0:
+		var progress = spawn_timer / grill_manager.current_spawn_interval
 		progress = clamp(progress, 0.0, 1.0)
-		
 		timer_bar_fill.size.x = timer_bar_max_width * progress
 
 func get_stack_top_y() -> float:

@@ -7,6 +7,8 @@ var landing_check_timer = 0.0
 var velocity_threshold = 10.0
 var landing_check_duration = 0.1
 
+@onready var sprite: Sprite2D = $Sprite2D
+
 func _ready() -> void:
 	contact_monitor = true
 	max_contacts_reported = 10
@@ -37,3 +39,10 @@ func _land():
 		print("PATTY HAS LANDED")
 
 		modulate = Color(0.9, 0.9, 0.9, 1.0)
+
+func set_patty_sprite(sprite_path: String):
+	var texture = load(sprite_path)
+	if texture and sprite:
+		sprite.texture = texture
+	else:
+		print("FAILED TO LOAD PATTY SPRITE ", sprite_path)

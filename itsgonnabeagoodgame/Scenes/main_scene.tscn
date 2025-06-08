@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://dt7nb2olijhqg"]
+[gd_scene load_steps=32 format=3 uid="uid://dt7nb2olijhqg"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_m4eul"]
 [ext_resource type="Texture2D" uid="uid://lchlp0su4qj5" path="res://Textures/test_bg.png" id="2_ad8lq"]
@@ -62,6 +62,11 @@ font = ExtResource("5_2x4mp")
 font_size = 5
 shadow_size = 4
 shadow_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_4sq71"]
+line_spacing = 1.0
+font = ExtResource("6_61tr5")
+font_size = 5
 
 [sub_resource type="Animation" id="Animation_iv7uo"]
 length = 0.001
@@ -299,8 +304,7 @@ offset_bottom = 269.0
 
 [node name="SauceSection" type="Panel" parent="UI/ShopContainer"]
 layout_mode = 0
-offset_left = -120.0
-offset_right = -14.0
+offset_right = 106.0
 offset_bottom = 111.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_e31e8")
 
@@ -325,10 +329,11 @@ label_settings = SubResource("LabelSettings_wh084")
 
 [node name="Information" type="Label" parent="UI/ShopContainer/SauceSection"]
 layout_mode = 0
-offset_left = 2.0
+offset_left = 3.0
 offset_top = 14.0
 offset_right = 103.0
 offset_bottom = 79.0
+label_settings = SubResource("LabelSettings_4sq71")
 
 [node name="TimerBarBorder" type="TextureRect" parent="UI"]
 offset_left = 185.0
