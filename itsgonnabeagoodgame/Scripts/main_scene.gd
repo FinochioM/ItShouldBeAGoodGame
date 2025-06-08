@@ -26,12 +26,14 @@ var counted_patties = []
 @onready var sauce_info_label: Label = $UI/ShopContainer/SauceSection/Information
 
 @onready var upgrade_toggle_button: TextureButton = $UI/UpgradesToggle
+@onready var shop_toggle_button: TextureButton = $UI/ShopToggle
 @onready var animation_player: AnimationPlayer = $UI/ToggleUpgradesPlayer
 @onready var upgrade_container: Control = $UI/UpgradesContainer
 @onready var click_catcher: Control = $UI/ClickCatcher
 @onready var timer_bar_fill: ColorRect = $UI/TimerBarBorder/TimerBarFill
 
 var upgrades_visible: bool = false
+var shop_visible: bool = false
 var timer_bar_max_width: float
 
 var displayed_money: float = 0.0
@@ -52,6 +54,7 @@ func _ready():
 	displayed_money = money
 	
 	upgrade_toggle_button.pressed.connect(toggle_upgrades)
+	shop_toggle_button.pressed.connect(toggle_shop)
 	click_catcher.gui_input.connect(_on_click_catcher_input)
 	click_catcher.visible = false
 	
@@ -204,9 +207,22 @@ func toggle_upgrades():
 		click_catcher.visible = true
 		upgrades_visible = true
 
+func toggle_shop():
+	if shop_visible:
+		animation_player.play("hide_shop_panel")
+		click_catcher.visible = false
+		shop_visible = false
+	else:
+		animation_player.play("show_shop_panel")
+		click_catcher.visible = true
+		shop_visible = true
+
 func _on_click_catcher_input(event):
 	if event is InputEventMouseButton and event.pressed:
-		toggle_upgrades()
+		if upgrades_visible:
+			toggle_upgrades()
+		elif shop_visible:
+			toggle_shop()
 
 func update_timer_bar():
 	if grill_manager.current_spawn_interval > 0:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://dt7nb2olijhqg"]
+[gd_scene load_steps=36 format=3 uid="uid://dt7nb2olijhqg"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_m4eul"]
 [ext_resource type="Texture2D" uid="uid://lchlp0su4qj5" path="res://Textures/test_bg.png" id="2_ad8lq"]
@@ -12,7 +12,9 @@
 [ext_resource type="Texture2D" uid="uid://0jcs4x3daf0" path="res://Textures/grill_upgrades_toggle.png" id="10_hh2tp"]
 [ext_resource type="Texture2D" uid="uid://dwcnuyom0b2cn" path="res://Textures/grill_upgrades_toggle_pressed.png" id="11_00rb3"]
 [ext_resource type="Texture2D" uid="uid://dhv5usnjkofa5" path="res://Textures/panel_bg_2.png" id="12_0dq88"]
+[ext_resource type="Texture2D" uid="uid://nvtc0w7ci78w" path="res://Textures/shop_upgrades_toggle.png" id="12_15vld"]
 [ext_resource type="Texture2D" uid="uid://ylk4y3bunl6l" path="res://Textures/grill_timer_bar.png" id="12_su356"]
+[ext_resource type="Texture2D" uid="uid://t4vigpwtxxph" path="res://Textures/shop_upgrades_toggle_pressed.png" id="13_bue1t"]
 [ext_resource type="Texture2D" uid="uid://bbaaklutkit6c" path="res://Textures/upgrade_shop_button.png" id="13_clowm"]
 [ext_resource type="Texture2D" uid="uid://bkd8sa5oi4368" path="res://Textures/upgrade_pressed_button_pressed.png" id="14_sx1px"]
 [ext_resource type="Texture2D" uid="uid://y8a25hhnm0dk" path="res://Textures/upgrade_shop_button_disabled.png" id="15_g1tj6"]
@@ -94,6 +96,30 @@ tracks/1/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 1)]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("ShopContainer:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-112, 158)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("ShopToggle:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
 
 [sub_resource type="Animation" id="Animation_l0wkb"]
 resource_name = "hide_upgrades_panel"
@@ -149,10 +175,66 @@ tracks/1/keys = {
 "values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
 }
 
+[sub_resource type="Animation" id="Animation_y2ypj"]
+resource_name = "show_shop_panel"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ShopContainer:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.166667, 0.333333),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(-112, 158), Vector2(8, 158), Vector2(1, 158)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ShopToggle:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.0666667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_w33co"]
+resource_name = "hide_shop_panel"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ShopContainer:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1, 158), Vector2(-111, 158)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ShopToggle:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_8ssvi"]
 _data = {
 "RESET": SubResource("Animation_iv7uo"),
+"hide_shop_panel": SubResource("Animation_w33co"),
 "hide_upgrades_panel": SubResource("Animation_l0wkb"),
+"show_shop_panel": SubResource("Animation_y2ypj"),
 "show_upgrades_panel": SubResource("Animation_glq7u")
 }
 
@@ -209,10 +291,10 @@ label_settings = SubResource("LabelSettings_sch8i")
 metadata/_edit_lock_ = true
 
 [node name="UpgradesToggle" type="TextureButton" parent="UI"]
-offset_left = 381.0
-offset_top = 243.0
-offset_right = 477.0
-offset_bottom = 267.0
+offset_left = 383.0
+offset_top = 245.0
+offset_right = 479.0
+offset_bottom = 269.0
 texture_normal = ExtResource("10_hh2tp")
 texture_pressed = ExtResource("11_00rb3")
 metadata/_edit_lock_ = true
@@ -294,13 +376,23 @@ texture_normal = ExtResource("5_hn77c")
 texture_pressed = ExtResource("8_32mtn")
 texture_disabled = ExtResource("8_57rwp")
 
+[node name="ShopToggle" type="TextureButton" parent="UI"]
+offset_left = 1.0
+offset_top = 245.0
+offset_right = 97.0
+offset_bottom = 269.0
+texture_normal = ExtResource("12_15vld")
+texture_pressed = ExtResource("13_bue1t")
+metadata/_edit_lock_ = true
+
 [node name="ShopContainer" type="Control" parent="UI"]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 8.0
+offset_left = -112.0
 offset_top = 158.0
-offset_right = 114.0
+offset_right = -6.0
 offset_bottom = 269.0
+metadata/_edit_lock_ = true
 
 [node name="SauceSection" type="Panel" parent="UI/ShopContainer"]
 layout_mode = 0

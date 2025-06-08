@@ -5,7 +5,7 @@ class_name ShopManager
 signal sauce_upgraded(new_level: int)
 
 var sauce_level: int = 0
-var sauce_base_cost: float = 25.0
+var sauce_base_cost: float = 450.0
 var sauce_cost_multiplier: float = 2.0
 
 var patty_textures = {
