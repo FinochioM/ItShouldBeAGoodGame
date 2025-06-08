@@ -83,7 +83,9 @@ func spawn_patty():
 	var spawn_y = get_stack_top_y()
 	patty.position = Vector2(spawn_position.x + random_offset, spawn_y)
 	
-	patty.set_patty_sprite(shop_manager.get_current_patty_sprite_path())
+	var texture = shop_manager.get_current_patty_texture()
+	print(texture.resource_path)
+	patty.set_patty_sprite(texture)
 
 	patty.patty_landed.connect(_on_patty_landed.bind(patty))
 

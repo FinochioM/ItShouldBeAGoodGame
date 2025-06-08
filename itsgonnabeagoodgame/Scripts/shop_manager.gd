@@ -8,12 +8,32 @@ var sauce_level: int = 0
 var sauce_base_cost: float = 25.0
 var sauce_cost_multiplier: float = 2.0
 
+var patty_textures = {
+	0: preload("res://Textures/patty.png"),
+	1: null,
+	2: null,
+	3: null,
+}
+
 var sauce_data = {
 	0: {"name": "No sauce", "multiplier": 1.0, "sprite": "patty.png"},
 	1: {"name": "Mayo", "multiplier": 1.1, "sprite": "patty_with_mayo.png"},
 	2: {"name": "Ketchup", "multiplier": 1.2, "sprite": "patty_with_ketchup.png"},
 	3: {"name": "Mustard", "multiplier": 1.3, "sprite": "patty_with_mustard.png"},
 }
+
+func _ready():
+	_load_sauce_textures()
+	
+func _load_sauce_textures():
+	for level in range(1, sauce_data.size()):
+		var sprite_path = "res://Textures/" + sauce_data[level]["sprite"]
+		if ResourceLoader.exists(sprite_path):
+			patty_textures[level] = load(sprite_path)
+			print("LOADED SAUCE TEXTURE FOR WHATEVER LEVEL WE ARE IN NOW")
+		else:
+			print("SAUCE TEXTURE NOT FOUND, THE CODE DOES NOT WORK")
+			patty_textures[level] = patty_textures[0]
 
 func get_sauce_upgrade_cost() -> float:
 	if sauce_level >= sauce_data.size() - 1:
@@ -42,8 +62,8 @@ func get_current_sauce_name() -> String:
 func get_current_money_multiplier() -> float:
 	return sauce_data[sauce_level]["multiplier"]
 
-func get_current_patty_sprite_path() -> String:
-	return "res://Textures/" + sauce_data[sauce_level]["sprite"]
+func get_current_patty_texture() -> Texture2D:
+	return patty_textures[sauce_level]
 
 func get_next_sauce_info() -> Dictionary:
 	if sauce_level >= sauce_data.size() - 1:

@@ -40,9 +40,8 @@ func _land():
 
 		modulate = Color(0.9, 0.9, 0.9, 1.0)
 
-func set_patty_sprite(sprite_path: String):
-	var texture = load(sprite_path)
+func set_patty_sprite(texture: Texture2D):
 	if texture and sprite:
 		sprite.texture = texture
 	else:
-		print("FAILED TO LOAD PATTY SPRITE ", sprite_path)
+		print("FAILED TO LOAD PATTY TEXTURE")
