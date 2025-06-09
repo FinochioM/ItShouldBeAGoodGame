@@ -28,6 +28,7 @@ var counted_patties = []
 @onready var upgrade_toggle_button: TextureButton = $UI/UpgradesToggle
 @onready var shop_toggle_button: TextureButton = $UI/ShopToggle
 @onready var animation_player: AnimationPlayer = $UI/ToggleUpgradesPlayer
+@onready var shop_animation_player: AnimationPlayer = $UI/ToggleShopPlayer
 @onready var upgrade_container: Control = $UI/UpgradesContainer
 @onready var click_catcher: Control = $UI/ClickCatcher
 @onready var timer_bar_fill: ColorRect = $UI/TimerBarBorder/TimerBarFill
@@ -200,8 +201,8 @@ func update_shop_info():
 func toggle_upgrades():
 	if upgrades_visible:
 		animation_player.play("hide_upgrades_panel")
-		click_catcher.visible = false
 		upgrades_visible = false
+		_update_click_catcher_visibility()
 	else:
 		animation_player.play("show_upgrades_panel")
 		click_catcher.visible = true
@@ -209,11 +210,11 @@ func toggle_upgrades():
 
 func toggle_shop():
 	if shop_visible:
-		animation_player.play("hide_shop_panel")
-		click_catcher.visible = false
+		shop_animation_player.play("hide_shop_panel")
 		shop_visible = false
+		_update_click_catcher_visibility()
 	else:
-		animation_player.play("show_shop_panel")
+		shop_animation_player.play("show_shop_panel")
 		click_catcher.visible = true
 		shop_visible = true
 
@@ -221,8 +222,12 @@ func _on_click_catcher_input(event):
 	if event is InputEventMouseButton and event.pressed:
 		if upgrades_visible:
 			toggle_upgrades()
-		elif shop_visible:
+		if shop_visible:
 			toggle_shop()
+
+func _update_click_catcher_visibility():
+	if not upgrades_visible and not shop_visible:
+		click_catcher.visible = false
 
 func update_timer_bar():
 	if grill_manager.current_spawn_interval > 0:
